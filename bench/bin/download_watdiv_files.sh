@@ -2,22 +2,24 @@
 
 set -e
 
-WATDIV_ARCIVE="watdiv.10M.tar.bz2"
-STRESS_ARCIVE="stress-workloads.tar.gz"
+WATDIV_ARCHIVE="watdiv.10M.tar.bz2"
+STRESS_ARCHIVE="stress-workloads.tar.gz"
 TARGET_DIR="resources/watdiv/data"
 
 mkdir -p ${TARGET_DIR}
 
 if [ ! -f "${TARGET_DIR}/watdiv.10M.nt" ]; then
-	wget https://dsg.uwaterloo.ca/watdiv/${WATDIV_ARCIVE}
-	echo "extracting: ${WATDIV_ARCIVE}"
-	tar -xvjf ${WATDIV_ARCIVE} -C ${TARGET_DIR}
-        rm ${WATDIV_ARCIVE}
+  # expired certificate
+	wget https://dsg.uwaterloo.ca/watdiv/${WATDIV_ARCHIVE} --no-check-certificate
+	echo "extracting: ${WATDIV_ARCHIVE}"
+	tar -xvjf ${WATDIV_ARCHIVE} -C ${TARGET_DIR}
+  rm ${WATDIV_ARCHIVE}
 fi
 
 if [ ! -f "${TARGET_DIR}/watdiv-stress-100" ]; then
-	wget https://dsg.uwaterloo.ca/watdiv/${STRESS_ARCIVE}
-	echo "extracting: ${STRESS_ARCIVE}"
-	tar -xvzf ${STRESS_ARCIVE} -C ${TARGET_DIR}
-        rm ${STRESS_ARCIVE}
+  # expired certificate
+	wget https://dsg.uwaterloo.ca/watdiv/${STRESS_ARCHIVE} --no-check-certificate
+	echo "extracting: ${STRESS_ARCHIVE}"
+	tar -xvzf ${STRESS_ARCHIVE} -C ${TARGET_DIR}
+  rm ${STRESS_ARCHIVE}
 fi
