@@ -1,20 +1,20 @@
 (ns crux-bench.main
   (:gen-class)
   (:require
+   [clojure.tools.logging :as log]
    [amazonica.aws.s3 :as s3]
    [clojure.pprint :as pp]
    [clojure.string :as str]
    [clojure.tools.logging :as log]
-   [crux-bench.watdiv :as watdiv]
+   [crux-bench.watdiv.main :as wat-main]
    [crux-bench.api :as bench-api]
    [crux-bench.config :as conf]
    [crux.api :as api]
    [crux.io :as crux-io]
-   [yada.yada :refer [listener]]
-   )
+   [taoensso.timbre :as tim]
+   [yada.yada :refer [listener]])
   (:import crux.api.IndexVersionOutOfSyncException
-           java.io.Closeable
-           ))
+           java.io.Closeable))
 
 ;; getApproximateMemTableStats
 
@@ -52,22 +52,24 @@
       {:crux crux-node
        :benchmark-runner benchmark-runner})))
 
+
+(defn- status-logger [node]
+  (while true
+    (Thread/sleep 3000)
+    (log/info
+     (with-out-str
+       (pp/pprint {:max-memory (.maxMemory (Runtime/getRuntime))
+                   :total-memory (.totalMemory (Runtime/getRuntime))
+                   :free-memory (.freeMemory (Runtime/getRuntime))})))
+    (log/info
+     (with-out-str
+       (pp/pprint (some-> node :benchmark-runner :status deref))))))
+
+
 (defn -main []
   (log/info "bench runner starting")
   (try
-    (run-node
-     conf/crux-options
-     (fn [node]
-       (while true
-         (Thread/sleep 3000)
-         (log/info
-          (with-out-str
-            (pp/pprint {:max-memory (.maxMemory (Runtime/getRuntime))
-                        :total-memory (.totalMemory (Runtime/getRuntime))
-                        :free-memory (.freeMemory (Runtime/getRuntime))})))
-         (log/info
-          (with-out-str
-            (pp/pprint (some-> node :benchmark-runner :status deref)))))))
+    (run-node conf/crux-options status-logger)
     (catch IndexVersionOutOfSyncException e
       (crux-io/delete-dir conf/index-dir)
       (-main)))
@@ -85,3 +87,11 @@
                (println e)
                (throw e)))))
   (future-cancel s))
+
+(comment
+  (let [crux-node (api/start-standalone-system conf/crux-options)
+        _ (tim/debug "crux node:" crux-node)
+        bench-runner (bench-mark-runner crux-node)
+        node {:crux crux-node :benchmark-runner bench-runner}]
+    (wat-main/start-and-run :crux node 4 4))
+  )

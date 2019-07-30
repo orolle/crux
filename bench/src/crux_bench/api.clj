@@ -10,8 +10,7 @@
    [yada.resources.classpath-resource])
   (:import java.io.Closeable))
 
-(defn application-resource
-  [{:keys [benchmark-runner] :as node}]
+(defn application-resource [{:keys [benchmark-runner] :as node}]
   ["/"
    [[""
      (resource

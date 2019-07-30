@@ -20,3 +20,16 @@
 
 (def secret-password
   "bcrypt+sha512$ad3066f667bdcfa2a9e0fbc79710bfdb$12$aabc70396ad92c1147f556105c8acda0c17a6f231b85c658")
+
+(def supported-backends [:crux])
+
+(def query-timeout-ms 15000)
+
+(def datomic-tx-size 100)
+
+(def watdiv-tests
+  {"watdiv/data/watdiv-stress-100/warmup.1.desc" "watdiv/data/watdiv-stress-100/warmup.sparql"
+   "watdiv/data/watdiv-stress-100/test.1.desc" "watdiv/data/watdiv-stress-100/test.1.sparql"
+   "watdiv/data/watdiv-stress-100/test.2.desc" "watdiv/data/watdiv-stress-100/test.2.sparql"
+   "watdiv/data/watdiv-stress-100/test.3.desc" "watdiv/data/watdiv-stress-100/test.3.sparql"
+   "watdiv/data/watdiv-stress-100/test.4.desc" "watdiv/data/watdiv-stress-100/test.4.sparql"})
